@@ -1,8 +1,8 @@
 package csh.beantage.domain.products.controller;
 
 import csh.beantage.domain.products.dto.ProductRequestDto.*;
-import csh.beantage.domain.products.dto.ProductResponseDto.ProductResponse;
-import csh.beantage.domain.products.service.ProductService;
+import csh.beantage.domain.products.dto.ProductResponseDto.*;
+import csh.beantage.domain.products.service.ProductAdminService;
 import csh.beantage.global.dto.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
+@CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("/admin/products")
 @RestController
 public class ProductApiAdminController {
-    private final ProductService service;
+    private final ProductAdminService service;
 
     @GetMapping
-    public ResponseEntity<ResponseDto<List<ProductResponse>>> getProducts() {
+    public ResponseEntity<ResponseDto<List<ProductWithStockResponse>>> getProducts() {
         return new ResponseEntity<>(
                 new ResponseDto(
                         "200-1",
@@ -31,7 +32,7 @@ public class ProductApiAdminController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto<ProductResponse>> createProduct(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<ResponseDto<ProductWithStockResponse>> createProduct(@RequestBody CreateProductRequest request) {
         return new ResponseEntity<>(
                 new ResponseDto<>(
                         "201-1",
@@ -54,7 +55,7 @@ public class ProductApiAdminController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto<ProductResponse>> updateProduct(
+    public ResponseEntity<ResponseDto<ProductWithStockResponse>> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody PatchProductRequest request) {
         return new ResponseEntity<>(

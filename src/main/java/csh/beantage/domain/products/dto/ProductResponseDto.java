@@ -4,16 +4,27 @@ import csh.beantage.domain.products.entity.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-
-//"id": 1,            // id
-//		"name" : "맛있는 원두", // 상품명
-//		"price" : 30000,     // 가격
-//		"stock" : 100,       // 재고 수량
-//		"imgUrl" : "coffee1.jpg"
-
 public class ProductResponseDto {
 
     public record ProductResponse(
+            @NotNull
+            Long id,
+            @NotBlank
+            String name,
+            @NotNull
+            Integer price,
+            String imgUrl) {
+
+        public static ProductResponse from (Product product) {
+            return new ProductResponse(
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getImgUrl());
+        }
+    }
+
+    public record ProductWithStockResponse(
             @NotNull
             Long id,
             @NotBlank
@@ -24,8 +35,8 @@ public class ProductResponseDto {
             Integer stock,
             String imgUrl) {
 
-        public static ProductResponse from (Product product) {
-            return new ProductResponse(
+        public static ProductWithStockResponse from (Product product) {
+            return new ProductWithStockResponse(
                     product.getId(),
                     product.getName(),
                     product.getPrice(),

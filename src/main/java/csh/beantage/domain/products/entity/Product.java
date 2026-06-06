@@ -1,10 +1,11 @@
 package csh.beantage.domain.products.entity;
 
-import csh.beantage.domain.products.dto.ProductRequestDto.*;
-import csh.beantage.domain.products.dto.ProductResponseDto.*;
+import csh.beantage.domain.products.dto.ProductRequestDto.PatchProductRequest;
 import csh.beantage.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;

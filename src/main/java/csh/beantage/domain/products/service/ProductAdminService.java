@@ -1,8 +1,7 @@
 package csh.beantage.domain.products.service;
 
 import csh.beantage.domain.products.dto.ProductRequestDto.*;
-import csh.beantage.domain.products.dto.ProductResponseDto;
-import csh.beantage.domain.products.dto.ProductResponseDto.ProductResponse;
+import csh.beantage.domain.products.dto.ProductResponseDto.*;
 import csh.beantage.domain.products.entity.Product;
 import csh.beantage.domain.products.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,17 +14,17 @@ import java.util.NoSuchElementException;
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class ProductService {
+public class ProductAdminService {
     private final ProductRepository repo;
 
-    public List<ProductResponse> getProducts() {
+    public List<ProductWithStockResponse> getProducts() {
         return repo.findAll()
                 .stream()
-                .map(ProductResponse::from)
+                .map(ProductWithStockResponse::from)
                 .toList();
     }
 
-    public ProductResponse createProduct(CreateProductRequest request) {
+    public ProductWithStockResponse createProduct(CreateProductRequest request) {
         Product product = Product.create(
                 request.name(),
                 request.price(),
@@ -33,7 +32,7 @@ public class ProductService {
                 request.imgUrl()
         );
         repo.save(product);
-        return ProductResponse.from(product);
+        return ProductWithStockResponse.from(product);
     }
 
 
@@ -42,9 +41,9 @@ public class ProductService {
         product.delete();
     }
 
-    public ProductResponse updateProduct(Long id, PatchProductRequest request) {
+    public ProductWithStockResponse updateProduct(Long id, PatchProductRequest request) {
         Product product = repo.findById(id).orElseThrow(NoSuchElementException::new);
         product.update(request);
-        return ProductResponse.from(product);
+        return ProductWithStockResponse.from(product);
     }
 }

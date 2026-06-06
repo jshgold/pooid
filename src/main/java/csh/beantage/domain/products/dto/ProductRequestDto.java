@@ -1,6 +1,5 @@
 package csh.beantage.domain.products.dto;
 
-import csh.beantage.domain.products.entity.Product;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
