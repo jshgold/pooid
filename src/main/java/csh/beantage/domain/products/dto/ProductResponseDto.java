@@ -13,7 +13,9 @@ import jakarta.validation.constraints.NotNull;
 
 public class ProductResponseDto {
 
-    public record GetProductResponse(
+    public record ProductResponse(
+            @NotNull
+            Long id,
             @NotBlank
             String name,
             @NotNull
@@ -22,8 +24,9 @@ public class ProductResponseDto {
             Integer stock,
             String imgUrl) {
 
-        public static GetProductResponse from (Product product) {
-            return new GetProductResponse(
+        public static ProductResponse from (Product product) {
+            return new ProductResponse(
+                    product.getId(),
                     product.getName(),
                     product.getPrice(),
                     product.getStock(),
