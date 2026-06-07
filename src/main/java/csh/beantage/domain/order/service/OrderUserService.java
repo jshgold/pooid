@@ -28,18 +28,21 @@ public class OrderUserService {
         Map<Long, Product> productMap = productRepository.findAllById(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, p -> p));
 
-        List<Integer> priceList = request.orderItems().stream()
-                .map(
-                        item -> item.amount() * productMap.get(item.productId()).getPrice()
-                )
+        // 1. DTO(Request)를 순수한 OrderItem 엔티티 리스트로 변환 (아직 Order는 모름)
+        List<OrderItem> orderItems = request.orderItems().stream()
+                .map(itemDto -> OrderItem.create(
+                        itemDto.productId(),
+                        productMap.get(itemDto.productId()).getPrice(),
+                        itemDto.amount()
+                ))
                 .toList();
-        Integer totalPrice = priceList.stream().mapToInt(Integer::valueOf).sum();
 
+
+        // 2. Order 엔티티 생성 (이 안에서 양방향 연관관계 매핑 및 totalPrice 계산이 모두 끝남)
         Order order = Order.create(
                 request.email(),
                 request.address(),
-                totalPrice,
-                request.orderItems().stream().map(OrderItem::create).toList()
+                orderItems
         );
 
         orderRepository.save(order);
