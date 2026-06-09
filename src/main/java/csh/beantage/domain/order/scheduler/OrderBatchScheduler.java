@@ -16,7 +16,8 @@ public class OrderBatchScheduler {
     private final JobOperator jobOperator;
     private final Job orderDeliveryJob;
 
-    @Scheduled(cron = "0 5 14 * * *")
+//    @Scheduled(cron = "0 1 * * * *")
+    @Scheduled(initialDelay = 180000, fixedRate = 60000)
     public void runOrderDeliveryBatch() {
         log.info("스케줄러 기동 - orderDeliveryJob 실행 요청");
         try {

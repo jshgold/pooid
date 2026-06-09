@@ -19,7 +19,6 @@ public class OrderApiUserController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<OrderResponseDto>> createOrder(@RequestBody CreateOrderRequest request) {
-        log.info("create order request: {}", request);
         OrderResponseDto orderResponseDto = service.createOrder(request);
         return new ResponseEntity<>(
                 new ResponseDto<>(

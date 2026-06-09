@@ -4,6 +4,7 @@ import csh.beantage.domain.products.dto.ProductRequestDto.PatchProductRequest;
 import csh.beantage.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA 스펙 충족, 외부 직접 생성 차단
+
 @Getter
 @Entity
 @SQLRestriction("deleted_at IS NULL")

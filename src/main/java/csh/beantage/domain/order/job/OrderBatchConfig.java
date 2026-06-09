@@ -2,7 +2,9 @@ package csh.beantage.domain.order.job;
 
 
 import csh.beantage.domain.order.entity.Order;
+import csh.beantage.domain.order.enums.OrderStatus;
 import jakarta.persistence.EntityManagerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -12,8 +14,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.database.JpaCursorItemReader;
 import org.springframework.batch.infrastructure.item.database.JpaItemWriter;
 import org.springframework.batch.infrastructure.item.database.JpaPagingItemReader;
+import org.springframework.batch.infrastructure.item.database.builder.JpaCursorItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -35,22 +41,30 @@ public class OrderBatchConfig {
     // ---------------------------------------------------------
     @StepScope
     @Bean
-    public JpaPagingItemReader<Order> myReader(EntityManagerFactory entityManagerFactory) {
-        LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(14, 0));
-        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 59, 59));
-
-        return new JpaPagingItemReaderBuilder<Order>()
+    public JpaCursorItemReader<Order> myReader(EntityManagerFactory entityManagerFactory) {
+//        LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(14, 0));
+//        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 59, 59));
+//        LocalDateTime startDate = LocalDateTime.now().minusMinutes(3);
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.now().minusMinutes(2);
+        System.out.println("**********startDate: " + startDate);
+        System.out.println("**********endDate: " + endDate);
+//        .queryString("SELECT o FROM Order o WHERE o.status in :statuses AND o.createdAt BETWEEN :startDate AND :endDate")
+//        .queryString("SELECT o FROM Order o WHERE o.status in :statuses AND o.createdAt > :startDate")
+//          "endDate", endDate
+        List<OrderStatus> statuses = List.of(OrderStatus.PAYMENT_COMPLETE,OrderStatus.PREPARING_PRODUCT,OrderStatus.IN_TRANSIT);
+        return new JpaCursorItemReaderBuilder<Order>()
                 .name("OrderReader")
                 .entityManagerFactory(entityManagerFactory)
                 // 실행할 JPQL 쿼리 (결제완료이면서 어제 14시 이후 오늘 13시59분59초 이전 상태)
-                .queryString("SELECT o FROM Order o WHERE o.status = 'PAYMENT_COMPLETE' AND o.createdAt BETWEEN :startDate AND :endDate")
+                .queryString("SELECT o FROM Order o WHERE o.status in :statuses AND o.createdAt < :startDate")
                 .parameterValues(Map.of(
-                        "startDate", startDate,
-                        "endDate", endDate
-                ))
+                        "statuses", statuses,
+                        "startDate", startDate
+                )).build();
+
                 // 한 번에 가져올 페이지 사이즈 (보통 Chunk Size와 동일하게 맞춤)
-                .pageSize(CHUNK_SIZE)
-                .build();
+//                .pageSize(CHUNK_SIZE)
     }
 
     // ---------------------------------------------------------
@@ -84,7 +98,7 @@ public class OrderBatchConfig {
     @Bean
     public Step orderDeliveryStep(JobRepository jobRepository,
                                   PlatformTransactionManager transactionManager,
-                                  JpaPagingItemReader<Order> myReader, // 파라미터로 주입받는 게 더 깔끔함
+                                  JpaCursorItemReader<Order> myReader, // 파라미터로 주입받는 게 더 깔끔함
                                   ItemProcessor<Order, Order> myProcessor,
                                   JpaItemWriter<Order> myWriter) {
 

@@ -36,6 +36,7 @@ public class Order extends BaseEntity {
         Order order = new Order();
         order.email = email;
         order.address = address;
+        order.status = OrderStatus.PAYMENT_COMPLETE;
         order.totalPrice = 0;
 
         for (OrderItem item : items) {
