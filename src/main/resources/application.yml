@@ -11,6 +11,11 @@ spring:
   datasource:
     hikari:
       auto-commit: false
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
   jpa:
     show-sql: true
     hibernate:

@@ -1,6 +1,7 @@
 package csh.beantage.domain.order.entity;
 
 import csh.beantage.domain.order.dto.OrderRequestDto.*;
+import csh.beantage.domain.order.enums.OrderStatus;
 import csh.beantage.domain.orderItem.entity.OrderItem;
 import csh.beantage.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -19,6 +20,8 @@ public class Order extends BaseEntity {
     private String email;
     private String address;
     private Integer totalPrice;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -52,5 +55,11 @@ public class Order extends BaseEntity {
         this.address = address;
         this.totalPrice = totalPrice;
         this.orderItems = orderItems;
+    }
+
+    public void advanceToNextStatus() {
+        if(this.status == OrderStatus.PAYMENT_COMPLETE) this.status = OrderStatus.PREPARING_PRODUCT;
+        else if(this.status == OrderStatus.PREPARING_PRODUCT) this.status = OrderStatus.IN_TRANSIT;
+        else if(this.status == OrderStatus.IN_TRANSIT) this.status = OrderStatus.DELIVERED;
     }
 }

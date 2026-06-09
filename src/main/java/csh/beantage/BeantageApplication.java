@@ -2,9 +2,9 @@ package csh.beantage;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableJpaAuditing
+@EnableScheduling // ★ 이거 없으면 @Scheduled가 아예 무시됩니다!
 @SpringBootApplication
 public class BeantageApplication {
 
